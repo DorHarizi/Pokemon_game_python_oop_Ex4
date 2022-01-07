@@ -6,8 +6,8 @@ from unittest import TestCase
 # from src.DiGraph import DiGraph
 # from src.GraphAlgo import GraphAlgo
 
-from src.My_Graph.DiGraph import DiGraph
-from src.My_Graph.GraphAlgo import GraphAlgo
+from My_Graph.DiGraph import DiGraph
+from My_Graph.GraphAlgo import GraphAlgo
 
 
 class TestGraphAlgo(TestCase):

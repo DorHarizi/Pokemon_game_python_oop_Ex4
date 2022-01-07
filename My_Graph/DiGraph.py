@@ -1,7 +1,7 @@
 from abc import ABC
-from src.My_Graph.NodeData import NodeData
-from src.Graph_Interface.GraphInterface import GraphInterface
-from src.My_Graph.EdgeData import EdgeData
+from My_Graph.NodeData import NodeData
+from Graph_Interface.GraphInterface import GraphInterface
+from My_Graph.EdgeData import EdgeData
 
 
 class DiGraph(GraphInterface, ABC):

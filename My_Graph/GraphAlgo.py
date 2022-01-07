@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import math
 from abc import ABC
 from typing import List
-from src.Graph_Interface.GraphAlgoInterface import GraphAlgoInterface
-from src.My_Graph.DiGraph import DiGraph
-from src.My_Graph.NodeData import NodeData as n
+from Graph_Interface.GraphAlgoInterface import GraphAlgoInterface
+from My_Graph.DiGraph import DiGraph
+from My_Graph.NodeData import NodeData as n
 
 
 class GraphAlgo(GraphAlgoInterface, ABC):

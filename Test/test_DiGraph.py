@@ -1,7 +1,7 @@
 from random import uniform, randrange
 from unittest import TestCase
 # from networkx.generators.random_graphs import erdos_renyi_graph
-from src.My_Graph.DiGraph import DiGraph as d
+from My_Graph.DiGraph import DiGraph as d
 
 class TestDiGraph(TestCase):
 
