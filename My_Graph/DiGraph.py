@@ -20,7 +20,7 @@ class DiGraph(GraphInterface, ABC):
 
     def __repr__(self):
         return 'Nodes:(%s)' % self.list_Of_Nodes + \
-               'Edges:(%s)' % self.list_of_Edge_Src
+               '\nEdges:(%s)' % self.list_of_Edge_Src
 
     """
     Return the node with this key of vertices in this graph.

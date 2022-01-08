@@ -1,17 +1,29 @@
-import random
+from numpy.distutils.fcompiler import pg
+
 from My_Graph.EdgeData import EdgeData
 from My_Graph.NodeData import NodeData
 from client_python.agentData import agentData
 from client_python.infoGame import infoGame
 from client_python.pokemonData import pokemonData
 from client_python import gameData
-import time
 import numpy as np
 import pygame
 import json
 from client import Client
 from pygame import gfxdraw
 from pygame import *
+
+class Button:
+    def __init__(self, rect: pygame.Rect, text: str, color, func=None):
+        self.rect = rect
+        self.text = text
+        self.color = color
+        self.func = func
+        self.is_pressed = False
+
+    def press(self):
+        self.is_pressed = not self.is_pressed
+
 
 # get the scaled data with proportions min_data, max_data
 # relative to min and max screen dimentions
@@ -138,6 +150,7 @@ screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
 clock = pygame.time.Clock()
 pygame.font.init()
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
+fontTime = pygame.font.SysFont('Arial', 20)
 
 client = Client()
 # create the object game
@@ -183,11 +196,61 @@ client.add_agent("{\"id\":0}")
 # size of circle in the graph
 radius = 15
 
+# draw nodes
+for currentNode in myGame.graphAlgo.graph.list_Of_Nodes.values():
+    posNodeTmp = NodeData.get_pos(currentNode)
+    x = my_scale(posNodeTmp[0], x=True)
+    y = my_scale(posNodeTmp[1], y=True)
+    # It's just to get a nice antialiasing circle
+    gfxdraw.filled_circle(screen, int(x), int(y), radius, Color(64, 80, 174))
+    gfxdraw.aacircle(screen, int(x), int(y), radius, Color(255, 255, 255))
+    # draw the node id
+    id_srf = FONT.render(str(NodeData.get_key(currentNode)), True, Color(255, 255, 255))
+    rect = id_srf.get_rect(center=(x, y))
+    screen.blit(id_srf, rect)
+
+# draw edges
+for currentEdge in myGame.graphAlgo.graph.list_of_Edges.values():
+    # find the edge nodes position
+    src = EdgeData.get_src(currentEdge)
+    dest = EdgeData.get_dest(currentEdge)
+    srcNode = myGame.graphAlgo.graph.list_Of_Nodes.get(src)
+    destNode = myGame.graphAlgo.graph.list_Of_Nodes.get(dest)
+    srcPos = NodeData.get_pos(srcNode)
+    destPos = NodeData.get_pos(destNode)
+    x_src = my_scale(srcPos[0], x=True)
+    y_src = my_scale(srcPos[1], y=True)
+    x_dest = my_scale(destPos[0], x=True)
+    y_dest = my_scale(destPos[1], y=True)
+    # draw the line
+    pygame.draw.line(screen, Color(255, 255, 255), (x_src, y_src), (x_dest, y_dest))
+
 # this command starts the server - the game is running now
 client.start()
-
 # from this point the game start
+tmpMin = 0
+tmpSec = 0
+
+# button pash
+button = Button(pygame.Rect((50, 20), (150, 50)), "Algo", (255, 255, 0))
+
 while client.is_running() == 'true':
+
+    # button pash
+    pygame.draw.rect(screen, button.color, button.rect)
+    if button.is_pressed:
+        button_text = FONT.render(button.text, True, (0, 250, 250))
+    else:
+        button_text = FONT.render(button.text, True, (0, 0, 0))
+    screen.blit(button_text, (button.rect.x + 37, button.rect.y))
+
+    minGame = int(float(client.time_to_end()) / 1000) / 60
+    secGame = int(float(client.time_to_end()) / 1000) % 60
+    # check events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit(0)
 
     # load all the current list pf Pokémons
     pokemons = json.loads(client.get_pokemons())
@@ -196,62 +259,6 @@ while client.is_running() == 'true':
     # load all the current list pf Agents
     agents = json.loads(client.get_agents())
     loadAgentsGame(agents)
-
-    # timer
-    # def draw_text(text, font, text_col, x, y):
-    #     imageTimer = font.render(text, True, text_col)
-    #     xTmp = scale(x, 50, screen.get_width() - 50, myGame.graphAlgo.graph.xMin, myGame.graphAlgo.graph.xMax)
-    #     yTmp = scale(y, 50, screen.get_height() - 50, myGame.graphAlgo.graph.yMin, myGame.graphAlgo.graph.yMax)
-    #     screen.blit(imageTimer, (int(xTmp), int(yTmp)))
-
-    minGame = int(float(client.time_to_end()) / 1000) / 60
-    secGame = int(float(client.time_to_end()) / 1000) % 60
-    timer = '%d:%d' % (minGame, secGame)
-    # gfxdraw.filled_circle(screen, int(x), int(y), radius, Color(64, 80, 174))
-    # gfxdraw.aacircle(screen, int(x), int(y), radius, Color(255, 255, 255))
-    id_srf = FONT.render(str(timer), True, Color(255, 255, 255))
-    rect = id_srf.get_rect(topright=(0, 0))
-    screen.blit(id_srf, rect)
-    print(timer)
-    # draw_text(timer, FONT, Color(255, 255, 255), screen.get_width()-25, screen.get_height()-25)
-
-    # check events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit(0)
-
-    # refresh surface
-    screen.fill(Color(0, 0, 0))
-
-    # draw nodes
-    for currentNode in myGame.graphAlgo.graph.list_Of_Nodes.values():
-        posNodeTmp = NodeData.get_pos(currentNode)
-        x = my_scale(posNodeTmp[0], x=True)
-        y = my_scale(posNodeTmp[1], y=True)
-        # It's just to get a nice antialiasing circle
-        gfxdraw.filled_circle(screen, int(x), int(y), radius, Color(64, 80, 174))
-        gfxdraw.aacircle(screen, int(x), int(y), radius, Color(255, 255, 255))
-        # draw the node id
-        id_srf = FONT.render(str(NodeData.get_key(currentNode)), True, Color(255, 255, 255))
-        rect = id_srf.get_rect(center=(x, y))
-        screen.blit(id_srf, rect)
-
-    # draw edges
-    for currentEdge in myGame.graphAlgo.graph.list_of_Edges.values():
-        # find the edge nodes position
-        src = EdgeData.get_src(currentEdge)
-        dest = EdgeData.get_dest(currentEdge)
-        srcNode = myGame.graphAlgo.graph.list_Of_Nodes.get(src)
-        destNode = myGame.graphAlgo.graph.list_Of_Nodes.get(dest)
-        srcPos = NodeData.get_pos(srcNode)
-        destPos = NodeData.get_pos(destNode)
-        x_src = my_scale(srcPos[0], x=True)
-        y_src = my_scale(srcPos[1], y=True)
-        x_dest = my_scale(destPos[0], x=True)
-        y_dest = my_scale(destPos[1], y=True)
-        # draw the line
-        pygame.draw.line(screen, Color(255, 255, 255), (x_src, y_src), (x_dest, y_dest))
 
     # draw agents
     for currentAgent in myGame.list_of_agent.values():
@@ -275,9 +282,24 @@ while client.is_running() == 'true':
             rect = id_srf.get_rect(center=(x, y))
             screen.blit(id_srf, rect)
 
-    # update screen changes
+    if tmpMin != minGame and tmpSec != secGame:
+        if tmpMin == 0 and tmpSec == 0:
+            tmpMin = minGame
+            tmpSec = secGame
+        timer = '%d:%d' % (minGame, secGame)
+        timer2 = '%d:%d' % (tmpMin, tmpSec)
+        imageTimer = fontTime.render(timer, False, Color(0, 255, 255))
+        rect = imageTimer.get_rect(center=(1030 - imageTimer.get_width(), imageTimer.get_width()))
+        imageTimer2 = fontTime.render(timer2, False, Color(0, 0, 0))
+        rectTmp2 = imageTimer2.get_rect(center=(1030 - imageTimer2.get_width(), imageTimer2.get_width()))
+        pygame.draw.rect(screen, Color(0, 0, 0), rectTmp2)
+        screen.blit(imageTimer2, rectTmp2)
+        screen.blit(imageTimer, rect)
+        if tmpMin != minGame and tmpSec != secGame:
+            tmpMin = minGame
+            tmpSec = secGame
+        print(timer)
     display.update()
-
     # refresh rate
     clock.tick(60)
 
@@ -292,3 +314,7 @@ while client.is_running() == 'true':
     # send the agent catch the Pokemon's
     client.move()
 # game over:
+
+
+
+
