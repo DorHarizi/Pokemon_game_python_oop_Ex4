@@ -12,14 +12,20 @@ class DiGraph(GraphInterface, ABC):
         self.list_of_Edge_Src = dict()
         self.list_of_Edges = dict()
         self.size_Of_Edge = 0
+        self.xMax = -float('inf')
+        self.xMin = float('inf')
+        self.yMax = -float('inf')
+        self.yMin = float('inf')
         self.mC = 0
+
     def __repr__(self):
-        return 'Nodes:(%s)' % self.list_Of_Nodes.keys() + \
+        return 'Nodes:(%s)' % self.list_Of_Nodes + \
                'Edges:(%s)' % self.list_of_Edge_Src
 
     """
     Return the node with this key of vertices in this graph.
     """
+
     def get_node(self, key) -> NodeData:
         return self.list_Of_Nodes.get(key)
 
@@ -29,18 +35,21 @@ class DiGraph(GraphInterface, ABC):
 
     def v_size(self) -> int:
         return len(self.list_Of_Nodes)
+
     """
     Returns the number of edges in this graph.
     """
 
     def e_size(self) -> int:
         return self.size_Of_Edge
+
     """
     Return a dictionary of all the nodes in the Graph, each node is represented using a pair
     """
 
     def get_all_v(self) -> dict:
         return self.list_Of_Nodes
+
     """
     Return a dictionary of all the nodes connected to (into) node_id,
     each node is represented using a pair (other_node_id, weight)
@@ -50,6 +59,7 @@ class DiGraph(GraphInterface, ABC):
         if self.list_Of_Nodes.get(id1) is not None:
             if self.list_of_Edge_Dest[id1] is not None:
                 return self.list_of_Edge_Dest[id1]
+
     """
     Return a dictionary of all the nodes connected from node_id , 
     each node is represented using a pair (other_node_id, weight)
@@ -59,12 +69,14 @@ class DiGraph(GraphInterface, ABC):
         if self.list_Of_Nodes.get(id1) is not None:
             if self.list_of_Edge_Src[id1] is not None:
                 return self.list_of_Edge_Src[id1]
+
     """
     Returns the current version of this graph.
     """
 
     def get_mc(self) -> int:
         return self.mC
+
     """
     Adds an edge to the graph.
     Apply the with if the edge already exist
@@ -88,6 +100,7 @@ class DiGraph(GraphInterface, ABC):
                     self.mC += 1
                     return True
         return False
+
     """
     Adds a node to the graph.
     """
@@ -100,6 +113,7 @@ class DiGraph(GraphInterface, ABC):
             self.mC += 1
             return True
         return False
+
     """
     Removes a node from the graph.
     """
@@ -119,6 +133,7 @@ class DiGraph(GraphInterface, ABC):
             del self.list_Of_Nodes[node_id]
             return True
         return False
+
     """
     Removes an edge from the graph.
     """

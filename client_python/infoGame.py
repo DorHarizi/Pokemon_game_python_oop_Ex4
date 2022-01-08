@@ -4,8 +4,7 @@ import My_Graph.DiGraph
 
 class infoGame:
     def __init__(self, pokemons: int = None, is_logged_in: bool = None, moves: int = None, grade: int = None,
-                 game_level: int = None, max_user_level: int = None, id: int = None,
-                 graph: My_Graph.GraphAlgo.GraphAlgo = None, agents: int = None):
+                 game_level: int = None, max_user_level: int = None, id: int = None, agents: int = None):
         self.pokemons = pokemons
         self.is_logged_in = is_logged_in
         self.moves = moves
@@ -13,7 +12,6 @@ class infoGame:
         self.game_level = game_level
         self.max_user_level = max_user_level
         self.id = id
-        self.graph = graph
         self.agents = agents
 
     """
