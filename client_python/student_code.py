@@ -153,31 +153,17 @@ def on_click(func):
 
 
 
-
-
-
-
 def pause():
-    #Main loop
-    pause = False
-    while 1:
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                if event.key==pygame.MOUSEBUTTONDOWN:
-                    pause = False
-                # elif event.key == pygame.MOUSEBUTTONDOWN:
-                #         pause = True
-                #
-                # elif event.key == pygame.MOUSEBUTTONDOWN:
-                #         pygame.display.update()
-                # pygame.mouse.get_pos()
-                # pygame.mouse.g
+    loop = 1
 
-        while pause == False:
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    if event.key==pygame.MOUSEBUTTONDOWN:
-                        pause = True
+
+    while loop:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN :
+                loop = 0
+
+
+
 
 
 
@@ -293,12 +279,15 @@ while client.is_running() == 'true':
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
+
+
             if button.rect.collidepoint(event.pos):
                 button.press()
+                curent=0
                 if button.is_pressed:
                     on_click(button.func)
-                else:
-                    result.clear()
+                # else:
+                #     result.clear()
 
 
     minGame = int(float(client.time_to_end()) / 1000) / 60
