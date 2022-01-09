@@ -1,6 +1,7 @@
 from numpy.distutils.fcompiler import pg
 
 from My_Graph.EdgeData import EdgeData
+from My_Graph.GraphAlgo import GraphAlgo
 from My_Graph.NodeData import NodeData
 from client_python.agentData import agentData
 from client_python.infoGame import infoGame
@@ -57,6 +58,7 @@ def loadPockemonsGame(pokemons_json):
                 pokemonTmp = pokemonData(valueTmp, typeTmp, posTmp)
                 if myGame.list_of_pokemon.__contains__(pokemonTmp) is not True:
                     myGame.list_of_pokemon[myGame.sizePokemons] = pokemonTmp
+                    myGame.tagPokemons.append(0)
                     myGame.sizePokemons = myGame.sizePokemons + 1
                 else:
                     continue
@@ -77,6 +79,7 @@ def loadAgentsGame(agents_json):
                 agentTmp = agentData(idTmp, valueTmp, srcTmp, destTmp, speedTmp, posTmp)
                 if myGame.list_of_agent.__contains__(agentTmp) is not True:
                     myGame.list_of_agent[myGame.sizeAgents] = agentTmp
+                    myGame.routAgents[myGame.sizeAgents] = []
                     myGame.sizeAgents = myGame.sizeAgents + 1
                 else:
                     continue
@@ -129,7 +132,6 @@ def loadGraphGame(graph_json):
                 edge = EdgeData(int(v["src"]), int(v["dest"]), float(v["w"]))
                 if myGame.graphAlgo.graph.list_of_Edges.__contains__(edge) is not True:
                     myGame.graphAlgo.graph.add_edge(int(v["src"]), int(v["dest"]), float(v["w"]))
-                    myGame.averageWeight = myGame.averageWeight + float(v["w"])
                 else:
                     continue
 
@@ -137,7 +139,7 @@ def loadGraphGame(graph_json):
 def checkPos(pos: tuple) -> int:
     for currenNode in myGame.graphAlgo.graph.list_Of_Nodes.values():
         currentPos = NodeData.get_pos(currenNode)
-        eps = np.finfo(np.float32).eps
+        eps = 0.005
         if currentPos[0] - eps <= pos[0] <= currentPos[0] + eps:
             if currentPos[1] - eps <= pos[1] <= currentPos[1] + eps:
                 return NodeData.get_key(currenNode)
@@ -289,7 +291,6 @@ while client.is_running() == 'true':
                 # else:
                 #     result.clear()
 
-
     minGame = int(float(client.time_to_end()) / 1000) / 60
     secGame = int(float(client.time_to_end()) / 1000) % 60
     # check events
@@ -352,15 +353,34 @@ while client.is_running() == 'true':
     # choose next edge
     for agent in myGame.list_of_agent.values():
         if agentData.get_dest(agent) == -1:
-            next_node = (agentData.get_src(agent) - 1) % myGame.graphAlgo.graph.v_size()
-            client.choose_next_edge(
-                '{"agent_id":' + str(agentData.get_id(agent)) + ', "next_node_id":' + str(next_node) + '}')
-            ttl = client.time_to_end()
+            idTmp = agentData.get_id(agent)
+            for pokemonIndex in myGame.list_of_pokemon.keys():
+                if myGame.tagPokemons[pokemonIndex] == 0:
+                    pokemonNow = myGame.list_of_pokemon.get(pokemonIndex)
+                    destPockemon = checkPos(pokemonData.get_pos(pokemonNow))
+                    if destPockemon != -1:
+                        listRoute = myGame.graphAlgo.shortest_path(agentData.get_src(agent), destPockemon)[1]
+                        if len(myGame.routAgents[idTmp]) == 0 and listRoute is not None:
+                            myGame.routAgents[idTmp] = listRoute
+                        listTmp = myGame.routAgents[idTmp]
+                        agentData.set_dest(agent, listTmp[0])
+                        myGame.tagPokemons[pokemonIndex] = 1
+                        next_node_id = listTmp[0]
+                        listTmp.pop(0)
+                        myGame.routAgents[idTmp] = listTmp
+                        client.choose_next_edge(
+                            '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                    else:
+                        continue
+                else:
+                    continue
+            else:
+                continue
+                # ttl = client.time_to_end()
             # print(ttl, client.get_info())
     # send the agent catch the Pokemon's
     client.move()
 # game over:
-
 
 
 
