@@ -1,13 +1,11 @@
-from numpy.distutils.fcompiler import pg
+import random
 
 from My_Graph.EdgeData import EdgeData
-from My_Graph.GraphAlgo import GraphAlgo
 from My_Graph.NodeData import NodeData
 from client_python.agentData import agentData
 from client_python.infoGame import infoGame
 from client_python.pokemonData import pokemonData
 from client_python import gameData
-import numpy as np
 import pygame
 import json
 from client import Client
@@ -19,6 +17,7 @@ from pygame import *
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 Blue = (2,55,55)
+
 
 class Button:
     def __init__(self, rect: pygame.Rect, text: str, color, func=None):
@@ -89,17 +88,17 @@ def loadInfoGame(info_json):
     if info_json is not None:
         info = info_json["GameServer"]
         if info is not None:
-            pokemonsTmp = int(info["GameServer"]["pokemons"])
-            if info["GameServer"]["is_logged_in"] == "True":
+            pokemonsTmp = int(info["pokemons"])
+            if info["is_logged_in"] == "True":
                 is_logged_inTmp = bool(True)
             else:
                 is_logged_inTmp = bool(False)
-            movesTmp = int(info["GameServer"]["moves"])
-            gradeTmp = int(info["GameServer"]["grade"])
-            game_levelTmp = int(info["GameServer"]["game_level"])
-            max_user_levelTmp = int(info["GameServer"]["max_user_level"])
-            idTmp = int(info["GameServer"]["id"])
-            agentsTmp = int(info["GameServer"]["agents"])
+            movesTmp = int(info["moves"])
+            gradeTmp = int(info["grade"])
+            game_levelTmp = int(info["game_level"])
+            max_user_levelTmp = int(info["max_user_level"])
+            idTmp = int(info["id"])
+            agentsTmp = int(info["agents"])
             infoTmp = infoGame(pokemonsTmp, is_logged_inTmp, movesTmp, gradeTmp, game_levelTmp,
                                max_user_levelTmp, idTmp, agentsTmp)
             myGame.info = infoTmp
@@ -136,37 +135,55 @@ def loadGraphGame(graph_json):
                     continue
 
 
-def checkPos(pos: tuple) -> int:
-    for currenNode in myGame.graphAlgo.graph.list_Of_Nodes.values():
-        currentPos = NodeData.get_pos(currenNode)
-        eps = 0.005
-        if currentPos[0] - eps <= pos[0] <= currentPos[0] + eps:
-            if currentPos[1] - eps <= pos[1] <= currentPos[1] + eps:
-                return NodeData.get_key(currenNode)
-    return -1
+def checkPos(pokemonTmp: pokemonData) -> int:
+    for currentEdge in myGame.graphAlgo.graph.list_of_Edges.values():
+        destNode = myGame.graphAlgo.graph.list_Of_Nodes.get(EdgeData.get_dest(currentEdge))
+        srcNode = myGame.graphAlgo.graph.list_Of_Nodes.get(EdgeData.get_src(currentEdge))
+        pos = pokemonData.get_pos(pokemonTmp)
+        xSrc = NodeData.get_pos(srcNode)[0]
+        ySrc = NodeData.get_pos(srcNode)[1]
+        xDest = NodeData.get_pos(destNode)[0]
+        yDest = NodeData.get_pos(destNode)[1]
+        keyDest = NodeData.get_key(destNode)
+        keySrc = NodeData.get_key(srcNode)
 
-result=[]
-node_screens=[]
+        if xSrc == pos[0] and ySrc == pos[1]:
+            return keySrc
+
+        if xDest == pos[0] and yDest == pos[1]:
+            return keyDest
+
+        if pokemonData.get_type(pokemonTmp) > 0:
+            m = (yDest - ySrc) / (xDest - xSrc)
+            num1 = pos[1] + pos[0] * m
+            num2 = yDest + (xDest * m)
+            if num1 + 0.0000001 == num2 + 0.0000001:
+                return keyDest
+        if pokemonData.get_type(pokemonTmp) < 0:
+            m = (ySrc - yDest) / (xSrc - xDest)
+            num1 = pos[1] + pos[0] * m
+            num2 = ySrc + (xSrc * m)
+            if num1 + 0.0000001 == num2 + 0.0000001:
+                return keySrc
+    return random.choice(range(len(myGame.graphAlgo.graph.list_Of_Nodes)))
+
+
+result = []
+node_screens = []
+
 
 def on_click(func):
     global result
-    result=func()
+    result = func()
     print(result)
-
 
 
 def pause():
     loop = 1
-
-
     while loop:
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN :
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 loop = 0
-
-
-
-
 
 
 # init pygame
@@ -194,35 +211,29 @@ strGraph = client.get_graph()
 graph_json = json.loads(strGraph)
 # Referral to our function load for Graph object
 loadGraphGame(graph_json)
-# Check if the function loadGraphGame work
-print(myGame.graphAlgo.graph.__repr__())
 
 # get all the Pokémon
 strPokemon = client.get_pokemons()
 pokemon_json = json.loads(strPokemon)
 # Referral to our function load for Pokemon object
 loadPockemonsGame(pokemon_json)
-# Check if the function loadPockemonsGame work
-print(myGame.list_of_pokemon)
 
-# # get all the Agents
-# strinfo = client.get_info()
-# info_json = json.loads(strinfo)
-# # Referral to our function load for Agents object
-# loadInfoGame(info_json)
-# # Check if the function loadAgentsGame work
-# print(myGame.info)
+# get all the Agents
+strInfo = client.get_info()
+info_json = json.loads(strInfo)
+# Referral to our function load for Agents object
+loadInfoGame(info_json)
 
-client.add_agent("{\"id\":0}")
-# # send the agents in the beginning to the start pos
-# numberOfAgents = myGame.info.get_agents()
-# for i in range(numberOfAgents):
-#     startNodeId = checkPos(agentData.get_pos(i))
-#     if startNodeId != -1:
-#         client.add_agent("{\"id\":startNodeId")
-#     else:
-#         num = random.choice(myGame.graphAlgo.graph.list_Of_Nodes)
-#         client.add_agent("{\"id\":num")
+# send the agents in the beginning to the start pos that were the Pokemon's with the max value
+numberOfAgents = myGame.info.get_agents()
+for i in myGame.list_of_pokemon.values():
+    if numberOfAgents > 0:
+        startNodeId = checkPos(i)
+        if startNodeId != -1:
+            client.add_agent("{\"id\":%d}" % startNodeId)
+            numberOfAgents = numberOfAgents - 1
+    else:
+        break
 
 # size of circle in the graph
 radius = 15
@@ -267,9 +278,8 @@ button = Button(pygame.Rect((50, 20), (150, 50)), "Pause", (255, 255, 0))
 
 while client.is_running() == 'true':
 
-    button.func=pause
-
     # button pash
+    button.func = pause
     pygame.draw.rect(screen, button.color, button.rect)
     if button.is_pressed:
         button_text = FONT.render(button.text, True, (0, 250, 250))
@@ -281,15 +291,10 @@ while client.is_running() == 'true':
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-
-
             if button.rect.collidepoint(event.pos):
                 button.press()
-                curent=0
                 if button.is_pressed:
                     on_click(button.func)
-                # else:
-                #     result.clear()
 
     minGame = int(float(client.time_to_end()) / 1000) / 60
     secGame = int(float(client.time_to_end()) / 1000) % 60
@@ -313,6 +318,7 @@ while client.is_running() == 'true':
         x = my_scale(posAgentTmp[0], x=True)
         y = my_scale(posAgentTmp[1], y=True)
         pygame.draw.circle(screen, Color(122, 61, 23), (int(x), int(y)), 15)
+
     # draw Pokemon
     for currentPokemon in myGame.list_of_pokemon.values():
         posPokemonTmp = pokemonData.get_pos(currentPokemon)
@@ -351,36 +357,54 @@ while client.is_running() == 'true':
     clock.tick(60)
 
     # choose next edge
-    for agent in myGame.list_of_agent.values():
-        if agentData.get_dest(agent) == -1:
-            idTmp = agentData.get_id(agent)
-            for pokemonIndex in myGame.list_of_pokemon.keys():
-                if myGame.tagPokemons[pokemonIndex] == 0:
-                    pokemonNow = myGame.list_of_pokemon.get(pokemonIndex)
-                    destPockemon = checkPos(pokemonData.get_pos(pokemonNow))
-                    if destPockemon != -1:
-                        listRoute = myGame.graphAlgo.shortest_path(agentData.get_src(agent), destPockemon)[1]
-                        if len(myGame.routAgents[idTmp]) == 0 and listRoute is not None:
+    for pokemonIndex in myGame.list_of_pokemon.keys():
+        if myGame.tagPokemons[pokemonIndex] == 0:
+            pokemonNow = myGame.list_of_pokemon.get(pokemonIndex)
+            for agent in myGame.list_of_agent.values():
+                idTmp = agentData.get_id(agent)
+                if len(myGame.routAgents[idTmp]) == 0:
+                    destAgent = checkPos(pokemonNow)
+                    if destAgent != -1:
+                        listRoute = myGame.graphAlgo.shortest_path(agentData.get_src(agent), destAgent)[1]
+                        if len(listRoute) != 0:
                             myGame.routAgents[idTmp] = listRoute
-                        listTmp = myGame.routAgents[idTmp]
+                            listTmp = myGame.routAgents[idTmp]
+                            agentData.set_dest(agent, listTmp[0])
+                            myGame.tagPokemons[pokemonIndex] = 1
+                            next_node_id = listTmp[0]
+                            listTmp.pop(0)
+                            myGame.routAgents[idTmp] = listTmp
+                            client.choose_next_edge(
+                                '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                    else:
+                        continue
+                else:
+                    listTmp = myGame.routAgents[idTmp]
+                    destAgent = listTmp[0]
+                    agentData.set_src(agent, agentData.get_dest(agent))
+                    indexDest = listTmp[len(listTmp)-1]
+                    if indexDest != destAgent:
                         agentData.set_dest(agent, listTmp[0])
-                        myGame.tagPokemons[pokemonIndex] = 1
                         next_node_id = listTmp[0]
                         listTmp.pop(0)
                         myGame.routAgents[idTmp] = listTmp
                         client.choose_next_edge(
                             '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
                     else:
-                        continue
-                else:
-                    continue
-            else:
-                continue
-                # ttl = client.time_to_end()
-            # print(ttl, client.get_info())
+                        agentData.set_dest(agent, listTmp[0])
+                        next_node_id = listTmp[0]
+                        listTmp.pop(0)
+                        myGame.routAgents[idTmp] = listTmp
+                        client.choose_next_edge(
+                            '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+        else:
+            continue
+        ttl = client.time_to_end()
+        print(ttl, client.get_info())
     # send the agent catch the Pokemon's
     client.move()
-# game over:
+    # game over:
+
 
 
 
