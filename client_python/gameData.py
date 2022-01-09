@@ -12,7 +12,8 @@ class gameData:
         self.sizePokemons = 0
         self.info = infoGame()
         self.graphAlgo = GraphAlgo()
-        self.averageWeight = 0.0
+        self.tagPokemons = []
+        self.routAgents = dict()
 
     """
     Return the game list_of_agent
