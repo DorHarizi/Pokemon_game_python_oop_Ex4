@@ -144,22 +144,27 @@ def checkPos(pokemonTmp: pokemonData) -> int:
         ySrc = NodeData.get_pos(srcNode)[1]
         xDest = NodeData.get_pos(destNode)[0]
         yDest = NodeData.get_pos(destNode)[1]
+        keyDest = NodeData.get_key(destNode)
+        keySrc = NodeData.get_key(srcNode)
 
-        if round(xSrc, 13) == round(pos[0], 13) and round(ySrc, 13) == round(pos[1], 13):
-            return NodeData.get_key(srcNode)
+        if xSrc == pos[0] and ySrc == pos[1]:
+            return keySrc
 
-        if round(xDest, 13) == round(pos[0], 13) and round(yDest, 13) == round(pos[1], 13):
-            return NodeData.get_key(destNode)
-        #y - y1 = m(x1-x)
-        m = (yDest - ySrc) / (xDest - xSrc)
-        num1 = pos[1] + pos[0] * m
-        num2 = yDest + (xDest * m)
-        if round(num1, 7) == round(num2, 7):
-            if pokemonData.get_type(pokemonTmp) > 0:
-                return NodeData.get_key(destNode)
+        if xDest == pos[0] and yDest == pos[1]:
+            return keyDest
 
-            else:
-                return NodeData.get_key(srcNode)
+        if pokemonData.get_type(pokemonTmp) > 0:
+            m = (yDest - ySrc) / (xDest - xSrc)
+            num1 = pos[1] + pos[0] * m
+            num2 = yDest + (xDest * m)
+            if num1 + 0.0000001 == num2 + 0.0000001:
+                return keyDest
+        else:
+            m = (ySrc - yDest) / (xSrc - xDest)
+            num1 = pos[1] + pos[0] * m
+            num2 = ySrc + (xSrc * m)
+            if num1 + 0.0000001 == num2 + 0.0000001:
+                return keySrc
     return random.choice(range(len(myGame.graphAlgo.graph.list_Of_Nodes)))
 
 
@@ -225,7 +230,7 @@ for i in myGame.list_of_pokemon.values():
     if numberOfAgents > 0:
         startNodeId = checkPos(i)
         if startNodeId != -1:
-            client.add_agent("{\"id\":%d}"% startNodeId)
+            client.add_agent("{\"id\":%d}" % startNodeId)
             numberOfAgents = numberOfAgents - 1
     else:
         break
@@ -363,14 +368,14 @@ while client.is_running() == 'true':
                         listRoute = myGame.graphAlgo.shortest_path(agentData.get_src(agent), destAgent)[1]
                         if len(listRoute) != 0:
                             myGame.routAgents[idTmp] = listRoute
-                        listTmp = myGame.routAgents[idTmp]
-                        agentData.set_dest(agent, listTmp[0])
-                        myGame.tagPokemons[pokemonIndex] = 1
-                        next_node_id = listTmp[0]
-                        listTmp.pop(0)
-                        myGame.routAgents[idTmp] = listTmp
-                        client.choose_next_edge(
-                            '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                            listTmp = myGame.routAgents[idTmp]
+                            agentData.set_dest(agent, listTmp[0])
+                            myGame.tagPokemons[pokemonIndex] = 1
+                            next_node_id = listTmp[0]
+                            listTmp.pop(0)
+                            myGame.routAgents[idTmp] = listTmp
+                            client.choose_next_edge(
+                                '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
                     else:
                         continue
                 else:
@@ -383,15 +388,15 @@ while client.is_running() == 'true':
                         next_node_id = listTmp[0]
                         listTmp.pop(0)
                         myGame.routAgents[idTmp] = listTmp
-                        client.choose_next_edge \
-                            ('{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                        client.choose_next_edge(
+                            '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
                     else:
                         agentData.set_dest(agent, listTmp[0])
                         next_node_id = listTmp[0]
                         listTmp.pop(0)
                         myGame.routAgents[idTmp] = listTmp
-                        client.choose_next_edge \
-                            ('{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                        client.choose_next_edge(
+                            '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
         else:
             continue
         ttl = client.time_to_end()
