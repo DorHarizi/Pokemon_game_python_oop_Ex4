@@ -159,7 +159,7 @@ def checkPos(pokemonTmp: pokemonData) -> int:
             num2 = yDest + (xDest * m)
             if num1 + 0.0000001 == num2 + 0.0000001:
                 return keyDest
-        else:
+        if pokemonData.get_type(pokemonTmp) < 0:
             m = (ySrc - yDest) / (xSrc - xDest)
             num1 = pos[1] + pos[0] * m
             num2 = ySrc + (xSrc * m)
