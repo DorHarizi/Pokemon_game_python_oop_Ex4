@@ -45,8 +45,9 @@ class agentData:
     Return AgentData src
     """
 
-    def get_src(self):
-        return self.src
+    def get_src(self)->int:
+        src = int(self.src)
+        return src
 
     """
     Set AgentData src
@@ -59,7 +60,7 @@ class agentData:
     Return the AgentData dest  
     """
 
-    def get_dest(self):
+    def get_dest(self)->int:
         return self.dest
 
     """
