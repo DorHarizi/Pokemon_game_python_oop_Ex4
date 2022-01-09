@@ -4,29 +4,39 @@
 
 # Design and implementation of directed and weighted graphs 
 
-![This is an image](https://user-images.githubusercontent.com/92825016/145035678-cd125e45-64d7-4055-91bb-646ddfbf99ba.png)  
+![This is an image](https://user-images.githubusercontent.com/92825016/148682775-bad02aa0-6a70-494b-abc6-d19409849c50.png)  
 
 ## Getting Started
 **libraries:** 
-1. import heapq
-2. import json
-3. import math
-4. import sys
-5. from abc import ABC
-6. from typing import List, Dict, Any
-7. from matplotlib import pyplot as pt
+1. from My_Graph.EdgeData import EdgeData
+2. from My_Graph.NodeData import NodeData
+3. from client_python.agentData import agentData
+4. from client_python.infoGame import infoGame
+5. from client_python.pokemonData import pokemonData
+6. from client_python import gameData
+7. import numpy as np
+8. import pygame
+9. import json
+10. from client import Client
+11. from pygame import gfxdraw
+12. from pygame import *
 
-8. from src.Graph_Interface.GraphAlgoInterface import GraphAlgoInterface
-9. from src.My_Graph.DiGraph import DiGraph
-10. from src.My_Graph.NodeData import NodeData as n
-
-## class
+## class in mygraph:
 1. DiGraph - this class create object from type graph.
 2. NodeData - this class create object from type node.
 3. EdgeData - this class create object from type edge.
 4. Main -  this class the linked to class MyGui,my_Algo and create DirectedWeightedGraph  .
 5. GeaphAlgo - this class include  function that we use on graph.
-7. MyGui - graphic interface.
+
+
+## class in client:
+1. agentData - this class create object from type agent.
+2. pokemonData - this class create object from type pokemon.
+3. client - this class as it communicating with the "server".
+4. student -  in this class the algorthem and the functiom are available  .
+5. gameData -  -this class create object from type gameData.
+
+
 
 
 ## uml :
@@ -77,70 +87,36 @@ the lower the better.
 This method loads a graph to this graph algorithm.
 param file - file name of JSON file
 
-## Run times  :
-### Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz   2.30 GHz 12.0 GB RAM 64x
+## client - function:
 
-**Building large graphs:**
-- 10 Vertices 20 Edges : 0.002 sec
-- 1,000 Vertices 10,000 Edges: 0.046 sec
-- 10,000 Vertices 100,000 Edges: 0.446 sec
-- 100,000 Vertices 1,000,000 Edges: 9.615 sec
+#### **loadPockemonsGame()**
+This method loads pockemons to this gmae.
 
-**Running Algorithms:**
+#### **loadAgentsGame()**
+This method loads Agents to this gmae.
 
-**centerpoint**:
+#### **loadInfoGame()**
+This method loads "Info" to this gmae.
 
-- 10 Vertices 20 Edges : 0.002 sec
-- 1,000 Vertices 10,000 Edges: 5.987 sec
-- 10,000 Vertices 100,000 Edges: timeout
-- 100,000 Vertices 2,000,000 Edges: timeout
+#### **loadGraphGame()**
+This method loads graph to this gmae.
 
-**shortestpath + load file**:
+#### **checkPos()**
+This method check  if Is the Pokemon on the graph gmae.
 
-- 10 Vertices 20 Edges : 0.002 sec
-- 1,000 Vertices 10,000 Edges: 0.05 sec
-- 10,000 Vertices 100,000 Edges: 0.587 sec
-- 100,000 Vertices 1,000,000 Edges: 13.385 sec
-
-
-**tsp  + load file**:
-
-- 10 Vertices 20 Edges : 0.02 sec
-- 1,000 Vertices 10,000 Edges: 0.45 sec
-- 10,000 Vertices 100,000 Edges: 2.544 sec
-- 100,000 Vertices 1,000,000 Edges: timeout
-
-**load + save file**:
-
-- 10 Vertices 20 Edges : 0.01 sec
-- 1,000 Vertices 10,000 Edges: 0.3 sec
-- 10,000 Vertices 100,000 Edges: 1.64 sec
-- 100,000 Vertices 1,000,000 Edges: 4.55
-
-## Performance comparison 
--  java vs python check Performanc of getgraph func  for 10/1000/10000 nodes (in ms) :
-![image](https://user-images.githubusercontent.com/92825016/147482950-224c6975-9e99-4c3f-813d-c31ffed29fa1.png)
-![image](https://user-images.githubusercontent.com/92825016/147550984-73bbffcd-6115-4bb5-916f-17d4a075bfe1.png)
+#### **pause()**
+This method pauses the game.
 
 
 
-## GUI - graphic interface :
-### When you open 'GUI' from Main class will open panel thet creat the graph from the json file thet you laod:
-![image](https://user-images.githubusercontent.com/92825016/147589337-0bbf9e4c-e997-4c37-aa0f-7973c5424a76.png)
+## pygame- graphic interface :
+### When you open 'pygame' from CMD class will open panel thet creat the graph game from the json file thet you laod and the play will run:
+![image](https://user-images.githubusercontent.com/92825016/148685516-679a6469-0b33-415b-b8fc-372630cd690c.png)
 
-### you can chose to operate the functuion(from GraphAlgo) on the graph from menu bar.
-![image](https://user-images.githubusercontent.com/92825016/147589388-adda5f37-62ad-4201-8b83-b50e9023cd39.png)
+### you can chose to pause the game through the "pause-button" .
+![image](https://user-images.githubusercontent.com/92825016/148685635-863993e4-7972-487c-8296-ac7ee4cbcf65.png)
 
-#### you can chose to laod other graph or to save the graph after you  operate the functuion - main menu .
-![image](https://user-images.githubusercontent.com/92825016/147589415-415c1557-fa31-4d87-a333-e236294c924c.png)
+#### You can see the time left for the game.
+![image](https://user-images.githubusercontent.com/92825016/148685687-d41b5895-dfb6-4f74-bc3f-ebb84bfd92cd.png)
 
-![image](https://user-images.githubusercontent.com/92825016/147589439-0d0d8b65-d136-452f-9f64-33f5daca8aef.png)
 
-### you can chose to operate the functuion(from DiGraph) on the graph from menu bar. 
-![image](https://user-images.githubusercontent.com/92825016/147589465-dae6b9ce-e00a-467d-b23a-8adc86abe7ee.png)
-
-### you can get graph data's , edges and nodes  .
-![image](https://user-images.githubusercontent.com/92825016/147589494-9ccd3ea8-bbd0-4cc1-b27c-f1bafab3932d.png)
-
-### When you finish you can to save the graph or to exit from 'GUI'.
-![image](https://user-images.githubusercontent.com/92825016/147473376-3886c907-eca3-4b27-a87f-70bcc1b06bba.png)
