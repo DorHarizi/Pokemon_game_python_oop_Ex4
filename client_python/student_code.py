@@ -172,7 +172,7 @@ WIDTH, HEIGHT = 1080, 720
 
 # default port
 PORT = 6666
-HOST = '10.100.102.18'
+HOST = '127.0.0.1'
 pygame.init()
 
 screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
