@@ -13,6 +13,12 @@ from client import Client
 from pygame import gfxdraw
 from pygame import *
 
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+Blue = (2,55,55)
+
 class Button:
     def __init__(self, rect: pygame.Rect, text: str, color, func=None):
         self.rect = rect
@@ -137,13 +143,50 @@ def checkPos(pos: tuple) -> int:
                 return NodeData.get_key(currenNode)
     return -1
 
+result=[]
+node_screens=[]
+
+def on_click(func):
+    global result
+    result=func()
+    print(result)
+
+
+
+
+
+
+
+def pause():
+    #Main loop
+    pause = False
+    while 1:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                if event.key==pygame.MOUSEBUTTONDOWN:
+                    pause = False
+                # elif event.key == pygame.MOUSEBUTTONDOWN:
+                #         pause = True
+                #
+                # elif event.key == pygame.MOUSEBUTTONDOWN:
+                #         pygame.display.update()
+                # pygame.mouse.get_pos()
+                # pygame.mouse.g
+
+        while pause == False:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    if event.key==pygame.MOUSEBUTTONDOWN:
+                        pause = True
+
+
 
 # init pygame
 WIDTH, HEIGHT = 1080, 720
 
 # default port
 PORT = 6666
-HOST = '192.168.1.45'
+HOST = '10.100.102.18'
 pygame.init()
 
 screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
@@ -232,9 +275,11 @@ tmpMin = 0
 tmpSec = 0
 
 # button pash
-button = Button(pygame.Rect((50, 20), (150, 50)), "Algo", (255, 255, 0))
+button = Button(pygame.Rect((50, 20), (150, 50)), "Pause", (255, 255, 0))
 
 while client.is_running() == 'true':
+
+    button.func=pause
 
     # button pash
     pygame.draw.rect(screen, button.color, button.rect)
@@ -243,6 +288,18 @@ while client.is_running() == 'true':
     else:
         button_text = FONT.render(button.text, True, (0, 0, 0))
     screen.blit(button_text, (button.rect.x + 37, button.rect.y))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if button.rect.collidepoint(event.pos):
+                button.press()
+                if button.is_pressed:
+                    on_click(button.func)
+                else:
+                    result.clear()
+
 
     minGame = int(float(client.time_to_end()) / 1000) / 60
     secGame = int(float(client.time_to_end()) / 1000) % 60
