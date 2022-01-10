@@ -43,7 +43,7 @@
 
 
 ## uml :
-![image](src/uml.png)  
+![image](https://raw.githubusercontent.com/DorHarizi/Directed_Weighted_Graph_oop_python/master/src/uml.png)  
 
 
 ## GeaphAlgo - function:
