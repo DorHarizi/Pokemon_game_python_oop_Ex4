@@ -29,29 +29,25 @@ class GraphAlgo(GraphAlgoInterface, ABC):
     Loads a graph from a json file.
     """
 
-    def load_from_json(self, file_name: str) -> bool:
-        hasLoaded = False
+    def load_from_json(self, file_name: str):
         try:
-            with open(file_name, "r") as f:
-                new_graph = json.load(f)
-                if new_graph is not None:
-                    new_Vertices = new_graph["Nodes"]
-                    new_Edges = new_graph["Edges"]
-                    for v in new_Vertices:
-                        if v["id"] is not None:
-                            # need to check if this call to function without the less parameters its ok;
-                            key = v["id"]
-                            posTmp = v["pos"]
-                            pos = tuple(float(s) for s in posTmp.strip("()").split(","))
-                            self.graph.add_node(key, pos)
+            new_graph = json.loads(file_name)
+            if new_graph is not None:
+                new_Vertices = new_graph["Nodes"]
+                new_Edges = new_graph["Edges"]
+                for v in new_Vertices:
+                    if v["id"] is not None:
+                        # need to check if this call to function without the less parameters its ok;
+                        key = v["id"]
+                        posTmp = v["pos"]
+                        pos = tuple(float(s) for s in posTmp.strip("()").split(","))
+                        self.graph.add_node(key, pos)
                     for v in new_Edges:
                         if v["src"] is not None and v["dest"] is not None and v["w"] is not None:
                             self.graph.add_edge(v["src"], v["dest"], v["w"])
-                    hasLoaded = True
         except IOError as e:
             print(e)
             print("\nJson file wasn't found!")
-        return hasLoaded
 
     """
     Saves the graph in JSON format to a file

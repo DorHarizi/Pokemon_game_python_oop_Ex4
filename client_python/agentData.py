@@ -1,3 +1,6 @@
+from client_python.pokemonData import pokemonData
+
+
 class agentData:
 
     def __init__(self, id: int = None, value: float = None, src: int = None, dest: int = None, speed: float = None,
@@ -8,6 +11,7 @@ class agentData:
         self.dest = dest
         self.speed = speed
         self.pos = pos
+        self.pokemon = pokemonData()
 
     def __repr__(self):
         return 'Agent %d{"value="%d, "src="%d, "dest="%d, "speed="%d, "pos="%s}' \

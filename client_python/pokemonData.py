@@ -7,7 +7,6 @@ class pokemonData:
     def __repr__(self):
         return '{"value="%d, "type="%d, "pos="%s}' \
                % (self.value, self.type, self.pos)
-
     """
     Return the pokemonData value
     """
