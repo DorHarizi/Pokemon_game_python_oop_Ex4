@@ -1,0 +1,179 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+student_code <|-- gameData
+student_code <|-- infoGame
+student_code <|-- pokemonData
+student_code <|-- agentData
+student_code <|-- GraphAlgo
+
+GraphAlgo <|-- NodeData
+GraphAlgo <|-- EdgeData
+GraphAlgo <|-- DiGraph
+
+DiGraph <|--EdgeData
+DiGraph <|--NodeData
+
+class NodeData {
++ def__init__(self, key: int = None, info: str = None, tag: float = None, pos: tuple = None, weight: float = None)
++       self.key:int
++       self.info:str
++       self.tag:float
++       self.pos:tuple
++       self.weight:float
++ def get_key(self)--> int:
++ def set_key(self, key):
++ def set_info(self, info):
++ def get_info(self)--> str:
++ def get_tag(self)--> int:
++ def set_tag(self, tag):
++ def get_weight(self):
++ def set_weight(self, wight):
++ def get_pos(self)--> tuple:
++ def set_pos(self, pos):
+}
+
+class EdgeData {
+ +def __init__(self, src: int = None, dest: int = None, weight: float = None)
+ +       self.src: int
+ +       self.dest: int
+ +      self.weight: float
+ +def get_src(self)--> int:
+ +def get_dest(self)--> int:
+ +def get_weight(self)--> float:
+ +def set_weight(self, weight):
+ +def set_src(self, src):
+ +def set_dest(self, dest):
+}
+class GraphAlgo {
+import heapq
+import json
+import sys
+import matplotlib.pyplot as plt
+import math
+from abc import ABC
+from typing import List
+from src.Graph_Interface.GraphAlgoInterface import GraphAlgoInterface
+from src.My_Graph.DiGraph import DiGraph
+from src.My_Graph.NodeData import NodeData as n
+
+ +def __init__(self, graph: DiGraph = None)
+ +      self.graph: DiGraph
+ +def get_graph(self) -> DiGraph:
+ +def load_from_json(self, file_name: str) -> bool:
+ +def save_to_json(self, file_name: str) -> bool:
+ +def shortest_path(self, id1: int, id2: int) -> (float, list):
+ +def TSP(self, node_lst: List[int]) -> (List[int], float):
+ +def centerPoint(self) -> (int, float):
+ +def plot_graph(self) -> None:
+}
+class DiGraph {
+from abc import ABC
+from src.My_Graph.NodeData import NodeData
+from src.Graph_Interface.GraphInterface import GraphInterface
+from src.My_Graph.EdgeData import EdgeData
+
++def __init__(self):
++       self.list_Of_Nodes: dict()
++       self.list_of_Edge_Dest: dict()
++       self.list_of_Edge_Src: dict()
++       self.list_of_Edges: dict()
++       self.size_Of_Edge: 0
++       self.mC: 0
++def get_node(self, key) -> NodeData:
++def v_size(self) -> int:
++def e_size(self) -> int:
++def get_all_v(self) -> dict:
++def all_in_edges_of_node(self, id1: int) -> dict:
++def all_out_edges_of_node(self, id1: int) -> dict:
++def get_mc(self) -> int:
++def add_edge(self, id1: int, id2: int, weight: float) -> bool:
++def add_node(self, node_id: int, pos: tuple) -> bool:
++def remove_node(self, node_id: int) -> bool:
++def remove_edge(self, node_id1: int, node_id2: int) -> bool:
+}
+class pokemonData {
++def __init__(self, value: float = None, type: int = None, pos: tuple = None):
++       self.value = value
++       self.type = type
++       self.pos = pos
++def __repr__(self):
++def get_value(self):
++def get_type(self):
++def set_type(self, type):
++def get_pos(self):
++def set_pos(self, pos):
+}
+class infoGame {
++def __init__(self, pokemons: int = None, is_logged_in: bool = None, moves: int = None, grade: int = None,
+                 game_level: int = None, max_user_level: int = None, id: int = None, agents: int = None):
++       self.pokemons = pokemons
++       self.is_logged_in = is_logged_in
++       self.moves = moves
++       self.grade = grade
++       self.game_level = game_level
++       self.max_user_level = max_user_level
++       self.id = id
++       self.agents = agents
+}
+
+class agentData: {
++def __init__(self, id: int = None, value: float = None, src: int = None, dest: int = None, speed: float = None,
+                 pos: tuple = None):
++       self.id = id
++       self.value = value
++       self.src = src
++       self.dest = dest
++       self.speed = speed
++       self.pos = pos
++       elf.pokemon = pokemonData()
+}
+
+class gameData: {
++def __init__(self):
++       self.list_of_agent = dict()
++       self.sizeAgents = 0
++       self.list_of_pokemon = dict()
++       self.info = infoGame()
++       self.graphAlgo = GraphAlgo()
++       self.tagPokemons = []
++       self.routAgents = dict()
++       self.sizePokemons = 0
+}
+
+class student_code: {
+from math import dist
+from types import SimpleNamespace
+from My_Graph.EdgeData import EdgeData
+from My_Graph.NodeData import NodeData
+from client_python.agentData import agentData
+from client_python.pokemonData import pokemonData
+from client_python import gameData
+from client import Client
+from pygame import gfxdraw
+from pygame import *
+import pygame
+import json
+
++class Button:{
++    def __init__(self, rect: pygame.Rect, text: str, color, func=None):
++        self.rect = rect
++        self.text = text
++        self.color = color
++        self.func = func
++        self.is_pressed = False
++        def press(self):
++        def on_click(func):
++        def pause():
++}
++def maxValue():
++def scale(data, min_screen, max_screen, min_data, max_data):
++def my_scale(data, x=False, y=False):
++def checkPos(pokemonTmp: pokemonData) -> int:
++def loadPockemonsGame(self, pokemons):
++def loadAgentsGame(self, agents):
++def funcAgent(self):
++def loadInfoGame(self, info_json):
+}
+@enduml
