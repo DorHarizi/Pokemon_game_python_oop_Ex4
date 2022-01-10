@@ -1,5 +1,7 @@
 import random
+import sys
 
+from My_Graph import DiGraph
 from My_Graph.EdgeData import EdgeData
 from My_Graph.NodeData import NodeData
 from client_python.agentData import agentData
@@ -11,6 +13,7 @@ import json
 from client import Client
 from pygame import gfxdraw
 from pygame import *
+from math import dist
 
 
 # Colors
@@ -135,37 +138,54 @@ def loadGraphGame(graph_json):
                     continue
 
 
+
+
+
+
 def checkPos(pokemonTmp: pokemonData) -> int:
+    eps = 0.00000001
+
     for currentEdge in myGame.graphAlgo.graph.list_of_Edges.values():
         destNode = myGame.graphAlgo.graph.list_Of_Nodes.get(EdgeData.get_dest(currentEdge))
         srcNode = myGame.graphAlgo.graph.list_Of_Nodes.get(EdgeData.get_src(currentEdge))
-        pos = pokemonData.get_pos(pokemonTmp)
-        xSrc = NodeData.get_pos(srcNode)[0]
-        ySrc = NodeData.get_pos(srcNode)[1]
-        xDest = NodeData.get_pos(destNode)[0]
-        yDest = NodeData.get_pos(destNode)[1]
+        pos1 = pokemonData.get_pos(pokemonTmp)
+        pos=(pos1[0],pos1[1])
+
+        temp1 = NodeData.get_pos(srcNode)
+        posSrc=(temp1[0],temp1[1])
+
+        temp2 = NodeData.get_pos(destNode)
+        posDest=(temp2[0],temp2[1])
+
+
         keyDest = NodeData.get_key(destNode)
         keySrc = NodeData.get_key(srcNode)
 
-        if xSrc == pos[0] and ySrc == pos[1]:
+        disRoot = dist(posSrc , posDest)
+        disRootCheck1 = dist(pos,posSrc)
+        disRootCheck2 = dist(pos , posDest)
+
+        if posSrc[0] == pos[0] and posSrc[1]== pos[1]:
             return keySrc
 
-        if xDest == pos[0] and yDest == pos[1]:
+        if posDest[0] == pos[0] and posDest[1] == pos[1]:
             return keyDest
 
         if pokemonData.get_type(pokemonTmp) > 0:
-            m = (yDest - ySrc) / (xDest - xSrc)
-            num1 = pos[1] + pos[0] * m
-            num2 = yDest + (xDest * m)
-            if num1 + 0.0000001 == num2 + 0.0000001:
-                return keyDest
+            if abs((disRootCheck2 + disRootCheck1)-disRoot) <= eps:
+                tmp = min(disRootCheck1, disRootCheck2)
+                if tmp == disRootCheck1:
+                    return keySrc
+
         if pokemonData.get_type(pokemonTmp) < 0:
-            m = (ySrc - yDest) / (xSrc - xDest)
-            num1 = pos[1] + pos[0] * m
-            num2 = ySrc + (xSrc * m)
-            if num1 + 0.0000001 == num2 + 0.0000001:
-                return keySrc
-    return random.choice(range(len(myGame.graphAlgo.graph.list_Of_Nodes)))
+            if abs((disRootCheck2 + disRootCheck1)-disRoot) <= eps:
+                tmp = min(disRootCheck1, disRootCheck2)
+
+                if tmp == disRootCheck2:
+                    return keyDest
+
+
+
 
 
 result = []
@@ -224,6 +244,12 @@ info_json = json.loads(strInfo)
 # Referral to our function load for Agents object
 loadInfoGame(info_json)
 
+
+
+back=pygame.image.load('pock.png')
+back = pygame.transform.scale(back, (screen.get_width(), screen.get_width()))
+screen.blit(back, (0, 0))
+
 # send the agents in the beginning to the start pos that were the Pokemon's with the max value
 numberOfAgents = myGame.info.get_agents()
 for i in myGame.list_of_pokemon.values():
@@ -265,7 +291,7 @@ for currentEdge in myGame.graphAlgo.graph.list_of_Edges.values():
     x_dest = my_scale(destPos[0], x=True)
     y_dest = my_scale(destPos[1], y=True)
     # draw the line
-    pygame.draw.line(screen, Color(255, 255, 255), (x_src, y_src), (x_dest, y_dest))
+    pygame.draw.line(screen, Color(255, 200, 255), (x_src, y_src), (x_dest, y_dest))
 
 # this command starts the server - the game is running now
 client.start()
@@ -276,16 +302,20 @@ tmpSec = 0
 # button pash
 button = Button(pygame.Rect((50, 20), (150, 50)), "Pause", (255, 255, 0))
 
+# button pash
+button.func = pause
+pygame.draw.rect(screen, button.color, button.rect)
+if button.is_pressed:
+    button_text = FONT.render(button.text, True, (0, 250, 250))
+else:
+    button_text = FONT.render(button.text, True, (0, 0, 0))
+screen.blit(button_text, (button.rect.x + 37, button.rect.y))
+
+
+
 while client.is_running() == 'true':
 
-    # button pash
-    button.func = pause
-    pygame.draw.rect(screen, button.color, button.rect)
-    if button.is_pressed:
-        button_text = FONT.render(button.text, True, (0, 250, 250))
-    else:
-        button_text = FONT.render(button.text, True, (0, 0, 0))
-    screen.blit(button_text, (button.rect.x + 37, button.rect.y))
+
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -317,9 +347,9 @@ while client.is_running() == 'true':
         posAgentTmp = agentData.get_pos(currentAgent)
         x = my_scale(posAgentTmp[0], x=True)
         y = my_scale(posAgentTmp[1], y=True)
-        pygame.draw.circle(screen, Color(122, 61, 23), (int(x), int(y)), 15)
+        pygame.draw.circle(screen, Color(100, 00, 23), (int(x), int(y)), 8)
 
-    # draw Pokemon
+    # # draw Pokemon
     for currentPokemon in myGame.list_of_pokemon.values():
         posPokemonTmp = pokemonData.get_pos(currentPokemon)
         x = my_scale(posPokemonTmp[0], x=True)
@@ -331,9 +361,10 @@ while client.is_running() == 'true':
             screen.blit(id_srf, rect)
         else:
             pygame.draw.circle(screen, Color(0, 255, 255), (int(x), int(y)), 15)
-            id_srf = FONT.render("->", True, Color(0, 0, 0))
+            id_srf = FONT.render("->", True, Color(100, 0, 0))
             rect = id_srf.get_rect(center=(x, y))
             screen.blit(id_srf, rect)
+
 
     if tmpMin != minGame and tmpSec != secGame:
         if tmpMin == 0 and tmpSec == 0:
@@ -357,6 +388,7 @@ while client.is_running() == 'true':
     clock.tick(60)
 
     # choose next edge
+
     for pokemonIndex in myGame.list_of_pokemon.keys():
         if myGame.tagPokemons[pokemonIndex] == 0:
             pokemonNow = myGame.list_of_pokemon.get(pokemonIndex)
@@ -375,7 +407,7 @@ while client.is_running() == 'true':
                             listTmp.pop(0)
                             myGame.routAgents[idTmp] = listTmp
                             client.choose_next_edge(
-                                '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
+                               '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
                     else:
                         continue
                 else:
@@ -399,12 +431,11 @@ while client.is_running() == 'true':
                             '{"agent_id":' + str(idTmp) + ', "next_node_id":' + str(next_node_id) + '}')
         else:
             continue
-        ttl = client.time_to_end()
-        print(ttl, client.get_info())
-    # send the agent catch the Pokemon's
+        # ttl = client.time_to_end()
+        # print(ttl, client.get_info())
     client.move()
-    # game over:
 
 
+# game over:
 
 
