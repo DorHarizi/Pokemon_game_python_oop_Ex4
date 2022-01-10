@@ -36,6 +36,9 @@
 4. student -  in this class the algorthem and the functiom are available  .
 5. gameData -  -this class create object from type gameData.
 
+## game vedio clip : 
+
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://user-images.githubusercontent.com/92825016/148840391-9837ef43-1d55-4368-8788-5122e5c54453.mp4)
 
 
 
@@ -111,7 +114,7 @@ This method pauses the game.
 
 ## pygame- graphic interface :
 ### When you open 'pygame' from CMD class will open panel thet creat the graph game from the json file thet you laod and the play will run:
-![image](https://user-images.githubusercontent.com/92825016/148685516-679a6469-0b33-415b-b8fc-372630cd690c.png)
+![image](https://user-images.githubusercontent.com/92825016/148841035-450d768c-097c-4826-9ece-9a78980043d1.png)
 
 ### you can chose to pause the game through the "pause-button" .
 ![image](https://user-images.githubusercontent.com/92825016/148685635-863993e4-7972-487c-8296-ac7ee4cbcf65.png)
