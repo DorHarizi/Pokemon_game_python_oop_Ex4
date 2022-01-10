@@ -43,7 +43,7 @@
 
 
 ## uml :
-![image](https://raw.githubusercontent.com/DorHarizi/Directed_Weighted_Graph_oop_python/master/src/uml.png)  
+![image](https://github.com/DorHarizi/Pokemon_game_python_oop_Ex4/blob/main/uml.png)  
 
 
 ## GeaphAlgo - function:
