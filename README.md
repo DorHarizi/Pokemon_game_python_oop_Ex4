@@ -2,7 +2,7 @@
 ## Dor Harizi
 ## Bar Nahmias [[GitHub](https://github.com/BarNahmias)]
 
-# Design and implementation of directed and weighted graphs 
+
 
 ![This is an image](https://user-images.githubusercontent.com/92825016/148682775-bad02aa0-6a70-494b-abc6-d19409849c50.png)  
 
